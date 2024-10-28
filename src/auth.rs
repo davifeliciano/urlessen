@@ -52,7 +52,7 @@ pub struct User {
     created_at: sqlx::types::chrono::NaiveDateTime,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct AuthenticatedUser {
     pub id: Uuid,
@@ -118,6 +118,9 @@ impl Claims {
 
 #[derive(Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
-pub struct AccessToken {
+pub struct SignInResponse {
     pub token: String,
+
+    #[serde(flatten)]
+    pub user: AuthenticatedUser,
 }

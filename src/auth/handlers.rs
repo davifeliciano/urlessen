@@ -1,4 +1,4 @@
-use super::{repo, AccessToken, AuthenticatedUser, Claims, Validate};
+use super::{repo, AuthenticatedUser, Claims, SignInResponse, Validate};
 use crate::{
     auth::{SignIn, SignUp},
     config::Config,
@@ -66,7 +66,7 @@ pub async fn signin(
     cookies: &CookieJar<'_>,
     body: Json<SignIn>,
     config: &State<Config>,
-) -> Result<Json<AccessToken>, Status> {
+) -> Result<Json<SignInResponse>, Status> {
     if !body.validate() {
         return Err(Status::UnprocessableEntity);
     }
@@ -128,8 +128,9 @@ pub async fn signin(
         rocket::time::Duration::seconds(config.refresh_token_ttl_sec as i64),
     ));
 
-    Ok(Json(AccessToken {
+    Ok(Json(SignInResponse {
         token: access_token,
+        user: AuthenticatedUser::from_user(&user),
     }))
 }
 
@@ -139,7 +140,7 @@ pub async fn refresh(
     user: AuthenticatedUser,
     cookies: &CookieJar<'_>,
     config: &State<Config>,
-) -> Result<Json<AccessToken>, Status> {
+) -> Result<Json<SignInResponse>, Status> {
     let session = cookies.get_private("session");
     let user_id = user.id;
 
@@ -160,7 +161,7 @@ pub async fn refresh(
 
     let now = chrono::Utc::now().timestamp() as usize;
     let mut claims = Claims {
-        user,
+        user: user.clone(),
         exp: now + config.access_token_ttl_sec as usize,
     };
 
@@ -182,8 +183,9 @@ pub async fn refresh(
         rocket::time::Duration::seconds(config.refresh_token_ttl_sec as i64),
     ));
 
-    Ok(Json(AccessToken {
+    Ok(Json(SignInResponse {
         token: access_token,
+        user: user.clone(),
     }))
 }
 
