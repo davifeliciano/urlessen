@@ -12,6 +12,7 @@ hex = { version = "0.4.3", features = ["serde"] }
 jsonwebtoken = "9.2.0"
 rand = "0.8.5"
 rocket = { version = "0.5.0", features = ["json", "uuid", "secrets"] }
+rocket_cors = "0.6.0"
 rocket_ws = "0.1.0"
 
 [dependencies.sqlx]
