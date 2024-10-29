@@ -10,7 +10,7 @@ use argon2::{
 };
 use rand::rngs::OsRng;
 use rocket::{
-    http::{Cookie, CookieJar, Status},
+    http::{Cookie, CookieJar, SameSite, Status},
     serde::json::Json,
     State,
 };
@@ -124,9 +124,13 @@ pub async fn signin(
         .await
         .or(Err(Status::InternalServerError))?;
 
-    cookies.add_private(Cookie::build(("session", refresh_token)).max_age(
-        rocket::time::Duration::seconds(config.refresh_token_ttl_sec as i64),
-    ));
+    cookies.add_private(
+        Cookie::build(("session", refresh_token))
+            .max_age(rocket::time::Duration::seconds(
+                config.refresh_token_ttl_sec as i64,
+            ))
+            .same_site(SameSite::None),
+    );
 
     Ok(Json(SignInResponse {
         token: access_token,
@@ -179,9 +183,13 @@ pub async fn refresh(
         .await
         .or(Err(Status::InternalServerError))?;
 
-    cookies.add_private(Cookie::build(("session", refresh_token)).max_age(
-        rocket::time::Duration::seconds(config.refresh_token_ttl_sec as i64),
-    ));
+    cookies.add_private(
+        Cookie::build(("session", refresh_token))
+            .max_age(rocket::time::Duration::seconds(
+                config.refresh_token_ttl_sec as i64,
+            ))
+            .same_site(SameSite::None),
+    );
 
     Ok(Json(SignInResponse {
         token: access_token,
@@ -199,7 +207,7 @@ pub async fn logout(
 
     if let Some(ref c) = cookies.get_private("session") {
         let result = repo::delete_session(&mut db, user_id, c.value()).await;
-        cookies.remove_private("session");
+        cookies.remove_private(Cookie::build("session").same_site(SameSite::None));
 
         match result {
             Err(_) => return Err(Status::InternalServerError),
