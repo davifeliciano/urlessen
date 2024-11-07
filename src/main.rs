@@ -10,6 +10,7 @@ use urlessen::{
     auth::handlers::{logout, refresh, signin, signup},
     config::Config,
     db::Db,
+    urls::handlers::{create_url, delete_url, get_url, get_urls_by_username, patch_url},
 };
 
 #[launch]
@@ -30,4 +31,6 @@ fn rocket() -> _ {
         .attach(cors.to_cors().unwrap())
         .attach(Db::init())
         .mount("/auth", routes![signup, signin, refresh, logout])
+        .mount("/urls", routes![get_url, create_url, patch_url, delete_url])
+        .mount("/users", routes![get_urls_by_username])
 }
