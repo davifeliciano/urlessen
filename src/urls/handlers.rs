@@ -23,7 +23,7 @@ pub async fn get_url(
 pub async fn get_urls_by_username(
     mut db: Connection<Db>,
     _user: AuthenticatedUser,
-    username: String,
+    username: &str,
 ) -> Result<Json<Vec<Url>>, Status> {
     let urls = repo::get_urls_by_username(&mut db, &username)
         .await
@@ -48,7 +48,7 @@ pub async fn create_url(
         &body.title,
         body.description.as_deref(),
         &body.long_url,
-        &nanoid!(),
+        &nanoid!(8),
     )
     .await
     .map_err(|e| match e.as_database_error() {
