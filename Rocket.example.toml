@@ -1,4 +1,4 @@
-[default.databases.nanochat]
+[default.databases.urlessen]
 url = "postgresql://username:password@localhost:5432/db"
 
 [default]
