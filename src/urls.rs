@@ -25,6 +25,7 @@ pub struct Url {
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
+#[serde(rename_all = "camelCase")]
 pub struct CreateBody {
     title: String,
     description: Option<String>,
@@ -44,6 +45,7 @@ impl Validate for CreateBody {
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
+#[serde(rename_all = "camelCase")]
 pub struct PatchBody {
     title: Option<String>,
     description: Option<String>,
