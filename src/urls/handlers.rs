@@ -46,7 +46,7 @@ pub async fn create_url(
         &mut db,
         user.id,
         &body.title,
-        body.description.as_deref(),
+        &body.description,
         &body.long_url,
         &nanoid!(8),
     )

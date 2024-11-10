@@ -15,7 +15,7 @@ pub struct Url {
     id: Uuid,
     creator: Uuid,
     title: String,
-    description: Option<String>,
+    description: String,
     long_url: String,
     short_url: String,
     times_visited: i32,
@@ -28,7 +28,7 @@ pub struct Url {
 #[serde(rename_all = "camelCase")]
 pub struct CreateBody {
     title: String,
-    description: Option<String>,
+    description: String,
     long_url: String,
 }
 
@@ -36,10 +36,7 @@ impl Validate for CreateBody {
     fn validate(&self) -> bool {
         is_valid_title(&self.title)
             && is_valid_long_url(&self.long_url)
-            && self
-                .description
-                .as_ref()
-                .map_or(true, |d| is_valid_description(d))
+            && is_valid_description(&self.description)
     }
 }
 

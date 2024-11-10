@@ -29,7 +29,7 @@ pub async fn insert_url(
     db: &mut PgConnection,
     creator: Uuid,
     title: &str,
-    description: Option<&str>,
+    description: &str,
     long_url: &str,
     short_url: &str,
 ) -> Result<Url, sqlx::Error> {
